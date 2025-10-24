@@ -60,13 +60,13 @@ void Cmd_close (char *tr[]);
 void Cmd_dup (char *tr[]);
 void Cmd_listopen (char *tr[]);
 void Cmd_infosys (char *tr[]);
-void Cmd_quit ();
-void Cmd_exit ();
-void Cmd_bye ();
+void Cmd_quit (char *tr[]);
+void Cmd_exit (char *tr[]);
+void Cmd_bye (char *tr[]);
 //P1
 void Cmd_create (char *tr[]);
 void Cmd_setdirparams (char *tr[]);
-void Cmd_getdirparams ();
+void Cmd_getdirparams (char *tr[]);
 void Cmd_dir (char *tr[]);
 void Cmd_erase (char *tr[]);
 void Cmd_delrec (char *tr[]);
