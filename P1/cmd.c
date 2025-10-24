@@ -310,7 +310,7 @@ bool mostrar(const char *path, const char *nombre) {
     struct stat s;
     if (lstat(path, &s) == -1) return false;         
     if (oculto == NOHID && nombre[0] == '.') return false;
-    if (linkeado == NOLINK && S_ISLNK(s.st_mode)) return false; 
+    if (linkeado == NOLINK && S_ISLNK(s.st_mode)) return false; // link y NOLINK
     return true;
 }
 
@@ -326,7 +326,7 @@ void print_info(char *path){
     char *nombre = strrchr(path, '/');
     if(nombre) nombre++; else nombre = path;
 
-    if(!mostrar(path, nombre)) return; 
+    if(!mostrar(path, nombre)) return; // Control de ocultos y links
 
     if(lstat(path, &s) == -1) {
         perror(path);
@@ -386,8 +386,7 @@ void list_dir(const char *dir){
 
         if(!mostrar(path, entry->d_name)) continue;
 
-        if(!esDirectorio(path)) print_info(path);
-        else if(rec == RECA) print_info(path);
+        print_info(path);
     }
 
     if(rec == RECA){
@@ -441,6 +440,7 @@ void erase_recursive(const char *path) {
         return;
     }
 
+    // Si es un archivo o link, lo borramos directamente
     if (!S_ISDIR(s.st_mode) || S_ISLNK(s.st_mode)) {
         if (remove(path) == -1) {
             perror(path);
@@ -448,6 +448,7 @@ void erase_recursive(const char *path) {
         return;
     }
 
+    // Si es un directorio, abrimos y borramos su contenido recursivamente
     DIR *d = opendir(path);
     if (!d) {
         perror(path);
@@ -466,6 +467,7 @@ void erase_recursive(const char *path) {
 
     closedir(d);
 
+    // Finalmente borramos el directorio vacío
     if (rmdir(path) == -1) {
         perror(path);
     }
