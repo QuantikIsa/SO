@@ -36,6 +36,14 @@ struct CMD C[]={
     {"quit", Cmd_quit},
     {"exit", Cmd_exit},
     {"bye", Cmd_bye},
+    {"create",Cmd_create},
+    {"setdirparams",Cmd_setdirparams},
+    {"getdirparams",Cmd_getdirparams},
+    {"dir",Cmd_dir},
+    {"erase",Cmd_erase},
+    {"delrec",Cmd_delrec},
+    {"lseek",Cmd_lseek},
+    {"writestr",Cmd_writestr},
     {NULL, NULL}
 };
 

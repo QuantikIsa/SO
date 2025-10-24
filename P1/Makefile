@@ -6,7 +6,7 @@ CFLAGS = -Wall -Wextra -g
 VALGRINDFLAGS = --leak-check=full --show-leak-kinds=all --track-origins=yes --show-reachable=yes
 
 # Archivos fuente y objetos
-SRC = p0.c hist_cmd.c help.c cmd.c files.c
+SRC = p1.c hist_cmd.c help.c cmd.c files.c
 OBJ = $(SRC:.c=.o)
 
 # Con "make" all es la ejecución por defecto (lo compila y luego ejecuta)

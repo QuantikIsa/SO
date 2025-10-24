@@ -14,7 +14,6 @@ struct MODES M[]={
     {NULL, NULL}
 };
 
-
 char *Files_mode(char *mode_cmd){
     int i;
     for (i = 0; M[i].mode_cmd != NULL; i++) {
@@ -37,7 +36,7 @@ void Files_delete(int desc){
     strcpy(files[desc].file, "");
     strcpy(files[desc].mode, "");
     files[desc].flag = -1;
-    n_openfiles++;
+    n_openfiles--;
 }
 
 char *Files_name(int desc){
@@ -64,25 +63,23 @@ void Files_show(){
             printf("descriptor: %d, offset: ( )-> %s %s\n", files[i].df, files[i].file, files[i].mode);
             
     }
-
-
 }
 
 void Files_init(){
     files[0].df = 0;
     strcpy(files[0].file, "entrada estandar");
     strcpy(files[0].mode, "O_RDWR");
-    files[0].flag = 2;
+    files[0].flag = O_RDWR;
 
     files[1].df = 1;
     strcpy(files[1].file, "salida estandar");
     strcpy(files[1].mode, "O_RDWR");
-    files[1].flag = 2;
+    files[1].flag = O_RDWR;
 
     files[2].df = 2;
     strcpy(files[2].file, "error estandar");
     strcpy(files[2].mode, "O_RDWR");
-    files[2].flag = 2;
+    files[2].flag = O_RDWR;
 
     for(int i=3;i<MAXF;i++){
         strcpy(files[i].file, "");
