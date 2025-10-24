@@ -36,16 +36,10 @@ enum OCULTO{
     NOHID
 };
 enum REC{
+    NOREC,
     RECA,
-    RECB,
-    NOREC
+    RECB    
 };
-
-int longitud = SHORT;
-int linkeado = NOLINK;
-int oculto = NOHID;
-int rec = NOREC;
-
 
 /* Tabla de comandos */
 struct CMD {
@@ -77,7 +71,7 @@ void Cmd_dir (char *tr[]);
 void Cmd_erase (char *tr[]);
 void Cmd_delrec (char *tr[]);
 void Cmd_lseek(char *tr[]);
-void Cmd_writestr(char *tr[0]);
+void Cmd_writestr(char *tr[]);
 
 
 void procesarEntrada(char *command);

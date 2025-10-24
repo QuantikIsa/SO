@@ -7,7 +7,6 @@ Isabel Villar García  login: i.villar@udc.es
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
-
 #include <unistd.h>
 #include <time.h>
 #include <sys/utsname.h>
@@ -15,11 +14,11 @@ Isabel Villar García  login: i.villar@udc.es
 
 #include "cmd.h"
 
-
 #define MAX 4096
 
 //Lista de comandos
 struct CMD C[]={
+    // P0
     {"authors", Cmd_authors},
     {"getpid", Cmd_getpid},
     {"chdir", Cmd_chdir},
@@ -36,6 +35,7 @@ struct CMD C[]={
     {"quit", Cmd_quit},
     {"exit", Cmd_exit},
     {"bye", Cmd_bye},
+    // P1
     {"create",Cmd_create},
     {"setdirparams",Cmd_setdirparams},
     {"getdirparams",Cmd_getdirparams},
@@ -44,6 +44,7 @@ struct CMD C[]={
     {"delrec",Cmd_delrec},
     {"lseek",Cmd_lseek},
     {"writestr",Cmd_writestr},
+
     {NULL, NULL}
 };
 
@@ -87,12 +88,7 @@ void procesarEntrada(char *command) {
     char *tr[MAX/2];
 
     HList_add(command);
-    
-
     TrocearCadena(command, tr);
-
-    
-
     DoCommand(tr); 
 }
 
@@ -109,6 +105,5 @@ int main (){
         leerEntrada(command);
         procesarEntrada(command);
     }
-
 }
 

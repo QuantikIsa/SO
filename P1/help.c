@@ -2,6 +2,7 @@
 
 
 struct CMD_help H[]={
+    //P0
     {"authors", Help_authors},
     {"getpid", Help_getpid},
     {"chdir", Help_chdir},
@@ -18,6 +19,16 @@ struct CMD_help H[]={
     {"quit", Help_quit},
     {"exit", Help_exit},
     {"bye", Help_bye},
+    //P1
+    {"create", Help_create},
+    {"setdirparams", Help_setdirparams},
+    {"getdirparams", Help_getdirparams},
+    {"dir", Help_dir},
+    {"erase", Help_erase},
+    {"delrec", Help_delrec},
+    {"lseek", Help_lseek},
+    {"writestr", Help_writestr},
+
     {NULL, NULL}
 };
 
@@ -126,5 +137,59 @@ void Help_exit(){
 void Help_bye(){
     printf("\tSINTAXIS: bye\n");
     printf("\tUSE: Ends the shell\n");
+}
+
+//P1
+
+void Help_create(){
+    printf("\tSINTAXIS: create [-f] nam\n");
+    printf("\tUSE: Creates a new file or a new directory\n");
+    printf("\tOPTIONS:\n\t· create -f nam: Creates a new file of name nam\n\t· create nam: Creates a new directory of name nam\n");
+}
+
+void Help_setdirparams(){
+    printf("\tSINTAXIS: setdirparams [long|short] [link|nolink] [hid|nohid] [reca|recb|norec]\n");
+    printf("\tUSE: Stablishes parameters for listing with dir\n");
+    printf("\tOPTIONS:\n\t· setdirparams [long|short]: Stablishes parameters for listing with dir: long or short format\n\t"
+            "· setdirparams [link|nolink]: Stablishes parameters for listing with dir: list (or not) symbolic link destination\n\t"
+            "· setdirparams [hid|nohid]:   Stablishes parameters for listing with dir: list or omit hidden files\n\t"
+            "· setdirparams [reca|recb|norec]: Stablishes parameters for listing with dir: recurse directories (after), recurse directories (before) or do not recurse\n");
+}
+
+void Help_getdirparams(){
+    printf("\tSINTAXIS: getdirparams\n");
+    printf("\tUSE: Shows de value of the parameters for listing with dir\n");
+}
+
+void Help_dir(){
+    printf("\tSINTAXIS: dir [-d] n1, n2, n3...\n");
+    printf("\tUSE: Shows information for files/dirs\n");
+    printf("\tOPTIONS:\n\t· dir n1, n2, n3... : Shows information for files/dirs n1, n2, n3..... Depending on the parameters long|short does a short (just name and size) or long listing.\n\t"
+            "The parameter link|nolink decides whether the link (in case of symbolic links) is printed or not.\n\t"
+            "· dir -d n1, n2, n3... :  The same as dir, but in the case en of the names n1, n2 ...is a directory, ITS CONTENTS are listed.\n\t"
+            "Besides the parameters long|short and link|nolink we can use hid|nohid to list hidden files inside the directories reca|recb|norec to make directory listing recursive\n");
+}
+
+void Help_erase(){
+    printf("\tSINTAXIS: erase n1, n2, n3...\n");
+    printf("\tUSE: Deletes files and/or empty directories, named n1, n2, n3 ...\n");
+}
+
+void Help_delrec(){
+    printf("\tSINTAXIS: delrec n1, n2, n3...\n");
+    printf("\tUSE: Deletes files and/or non empty directories (recursively) named n1, n2, n3...\n");
+}
+
+void Help_lseek(){
+    printf("\tSINTAXIS: lseek [df|off|ref]\n");
+    printf("\tUSE: Indicates the positions of the offset in an open file\n");
+    printf("\tOPTIONS:\n\t· df: File descriptor for the open file\n\t"
+            "· off: New offset\n\t"
+            "· ref: Reference, SEEK_SET (offset is from the beginning), SEEK_CUR (offset is from the current position), SEEK_END (offset is from the end)\n");
+}
+
+void Help_writestr(){
+    printf("\tSINTAXIS: writestr df str\n");
+    printf("\tUSE: Write the string str in the open file with descriptor df\n");
 }
 

@@ -1,5 +1,10 @@
 #include "cmd.h"
 
+int longitud = SHORT;
+int linkeado = NOLINK;
+int oculto = NOHID;
+int rec = NOREC;
+
 void Cmd_authors (char *tr[]){
     if(tr[0]==NULL) 
         printf("Nuria García García: n.ggarcia@udc.es\nIsabel Villar García: i.villar@udc.es\n");
@@ -32,7 +37,6 @@ void Cmd_getcwd (char *tr[]){
         perror("error");
         return;
     }
-
     if (tr[0] == NULL) {
         printf("%s\n", dir);
     } 
@@ -44,7 +48,7 @@ void Cmd_chdir (char *tr[]){
     if(tr[0]==NULL) Cmd_getcwd(tr);
     else{
         if(chdir(tr[0])==0) printf("%s\n", tr[0]);
-        else perror(NULL);
+        else perror("error");
     }
 }
 
@@ -116,7 +120,7 @@ void Cmd_historic (char *tr[]){
 }
 
 void Cmd_open (char *tr[]){
-    int i, df, mode=0;
+    int i, df, mode =  O_RDONLY;
     char *aux;
     char mode_c[MAX];
     if(tr[0]==NULL){
@@ -138,10 +142,9 @@ void Cmd_open (char *tr[]){
         else if (!strcmp(tr[i],"ap")) mode|=O_APPEND;
         else if (!strcmp(tr[i],"tr")) mode|=O_TRUNC; 
         else break;
-    
 
     if ((df=open(tr[0],mode,0777))==-1)
-        perror ("Imposible abrir fichero");
+        perror ("error");
     else{
         Files_add(df, tr[0], mode_c, mode);
         printf ("Anadida entrada %d a la tabla ficheros abiertos\n",df);
@@ -159,7 +162,7 @@ void Cmd_close (char *tr[]){
     }
     
     if (close(df)==-1)
-        perror("Imposible cerrar descriptor");
+        perror("error");
     else
         Files_delete(df);
 }
@@ -169,8 +172,8 @@ void Cmd_dup (char *tr[]){
     char aux[MAX],*p;
     char mode_c[MAX];
     
-    if (tr[0]==NULL || (df=atoi(tr[0]))<0) { /*no hay parametro*/
-        Files_show();        /*o el descriptor es menor que 0*/
+    if (tr[0]==NULL || (df=atoi(tr[0]))<0) { 
+        Files_show();       
         return;
     }
     
@@ -180,7 +183,7 @@ void Cmd_dup (char *tr[]){
 
     duplicado = dup(df);
     if(duplicado==-1){
-        perror("dup");
+        perror("error");
         return;
     }
 
@@ -202,7 +205,7 @@ void Cmd_infosys (char *tr[]){
         if (uname(&info)==0)
             printf("%s (%s), OS: %s-%s-%s\n", info.nodename, info.machine, info.sysname, info.release, info.version);
         else
-            perror(NULL);
+            perror("error");
     }
     else printf("Argumentos inválidos\n");
 }
@@ -220,18 +223,18 @@ void Cmd_bye (){
 }
 
 void Cmd_create (char *tr[]){
-    if(tr[0]==NULL) printf("Faltan argumentos");
+    if(tr[0]==NULL) printf("Faltan argumentos\n");
     
     else if (!strcmp(tr[0],"-f")){
         if(tr[1]==NULL) printf("Falta el nombre del archivo\n");
         else{
-            if (open(tr[1],O_CREAT, 0775)==-1)
-                perror ("Imposible abrir fichero\n");
+            if (open(tr[1],O_CREAT | O_RDWR, 0775)==-1)
+                perror ("error");
         }
     }
     else{
         if (mkdir(tr[0], 0775)==-1)
-            perror ("Imposible abrir fichero\n");
+            perror ("error");
             
                 
     }
@@ -263,15 +266,15 @@ void Cmd_getdirparams (){
 }
 
 char LetraTF (mode_t m){
-    switch (m&S_IFMT) { /*and bit a bit con los bits de formato,0170000 */
-        case S_IFSOCK: return 's'; /*socket */
-        case S_IFLNK: return 'l'; /*symbolic link*/
-        case S_IFREG: return '-'; /* fichero normal*/
-        case S_IFBLK: return 'b'; /*block device*/
-        case S_IFDIR: return 'd'; /*directorio */ 
-        case S_IFCHR: return 'c'; /*char device*/
-        case S_IFIFO: return 'p'; /*pipe*/
-        default: return '?'; /*desconocido, no deberia aparecer*/
+    switch (m&S_IFMT) { //and bit a bit con los bits de formato,0170000     VS es rarito 
+        case S_IFSOCK: return 's'; //socket                                 VS es rarito 
+        case S_IFLNK: return 'l'; //symbolic link                           VS es rarito 
+        case S_IFREG: return '-'; // fichero normal                         VS es rarito 
+        case S_IFBLK: return 'b'; //block device                            VS es rarito 
+        case S_IFDIR: return 'd'; //directorio                              VS es rarito 
+        case S_IFCHR: return 'c'; //char device                             VS es rarito 
+        case S_IFIFO: return 'p'; //pipe                                    VS es rarito 
+        default: return '?'; //desconocido, no deberia aparecer             
     }
 }
 
@@ -290,7 +293,7 @@ char * ConvierteModo (mode_t m, char *permisos){
     if (m&S_IXOTH) permisos[9]='x';
     if (m&S_ISUID) permisos[3]='s';    /*setuid, setgid y stickybit*/
     if (m&S_ISGID) permisos[6]='s';
-    if (m&S_ISVTX) permisos[9]='t';  // Es rarito 
+    if (m&S_ISVTX) permisos[9]='t';  // VS es rarito 
     
     return permisos;
 }
@@ -303,6 +306,15 @@ int esDirectorio (char * dir){
 }
 
 
+bool mostrar(const char *path, const char *nombre) {
+    struct stat s;
+    if (lstat(path, &s) == -1) return false;         
+    if (oculto == NOHID && nombre[0] == '.') return false;
+    if (linkeado == NOLINK && S_ISLNK(s.st_mode)) return false; 
+    return true;
+}
+
+
 void print_info(char *path){
     struct stat s;
     char permisos[MAX];
@@ -311,106 +323,90 @@ void print_info(char *path){
     struct passwd *pw;
     struct group *gr;
 
+    char *nombre = strrchr(path, '/');
+    if(nombre) nombre++; else nombre = path;
+
+    if(!mostrar(path, nombre)) return; 
+
     if(lstat(path, &s) == -1) {
         perror(path);
         return;
     }
 
-    char *nombre = strrchr(path, '/');
-    if (nombre) nombre++;
-    else nombre = path;
-
-    if(longitud==LONG){
-        
+    if(longitud == LONG){
         ConvierteModo(s.st_mode, permisos);
 
         tm_info = localtime(&s.st_mtime);
         strftime(fecha, sizeof(fecha), "%Y/%m/%d-%H:%M", tm_info);
-
         pw = getpwuid(s.st_uid);
         gr = getgrgid(s.st_gid);
 
-        printf("%s   %lu (%6lu)   %-8s %-8s %s %6lld %s\n",
-            fecha,
-            (unsigned long)s.st_nlink,
-            (unsigned long)s.st_ino,
-            pw ? pw->pw_name : "???",
-            gr ? gr->gr_name : "???",
-            permisos,
-            (long long)s.st_size,
-            nombre);
-    }
-    else{
-        printf("  %6ld  %s\n", s.st_size, nombre);
-    }
-
+        printf("%s   %lu (%6lu)   %-8s %-8s %s %6lld %s\n", fecha, (unsigned long)s.st_nlink,
+                (unsigned long)s.st_ino, pw ? pw->pw_name : "???", gr ? gr->gr_name : "???",
+                permisos, (long long)s.st_size, nombre);
+    } else 
+        printf("  %6ld  %s\n", (long)lstat(path, &s) == 0 ? s.st_size : 0, nombre);
 }
 
-void list_dir(char *dir){
+
+
+
+void list_dir(const char *dir){
     DIR *d = opendir(dir);
     if(!d){
-        perror(dir);   
+        perror(dir);
         return;
     }
-    
+
     struct dirent *entry;
     char path[MAX];
+    char *subdirs[MAX];
+    int sub_count = 0;
 
-    printf("************%s\n", dir);
-
-    // Primera pasada: listar contenido
-    while ((entry = readdir(d)) != NULL) {
-        // Ignorar . y .. siempre
-        if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0)
-            continue;
-
-        // FILTRO DE ARCHIVOS OCULTOS
-        if (oculto == NOHID && entry->d_name[0] == '.')
-            continue;
+    while((entry = readdir(d)) != NULL){
+        if(strcmp(entry->d_name,".")==0 || strcmp(entry->d_name,"..")==0) continue;
 
         snprintf(path, sizeof(path), "%s/%s", dir, entry->d_name);
 
-        // FILTRO DE ENLACES
-        if (linkeado == NOLINK) {
-            struct stat s_tmp;
-            if (lstat(path, &s_tmp) != -1 && S_ISLNK(s_tmp.st_mode))
-                continue; // saltar links si no se quieren mostrar
-        }
+        if(!mostrar(path, entry->d_name)) continue;
 
-        // Mostrar información usando print_info
-        print_info(path);
+        if(esDirectorio(path)) subdirs[sub_count++] = strdup(path);
     }
 
-    // Segunda pasada para recursividad
-    if (rec != NOREC) {
-        rewinddir(d);
-
-        while ((entry = readdir(d)) != NULL) {
-            if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0)
-                continue;
-
-            // FILTRO OCULTOS también para recursión
-            if (oculto == NOHID && entry->d_name[0] == '.')
-                continue;
-
-            snprintf(path, sizeof(path), "%s/%s", dir, entry->d_name);
-
-            if (esDirectorio(path)) {
-                list_dir(path);
-            }
-        }
+    if(rec == RECB){
+        for(int i=0;i<sub_count;i++)
+            list_dir(subdirs[i]);
     }
+
+    rewinddir(d);
+    while((entry = readdir(d)) != NULL){
+        if(strcmp(entry->d_name,".")==0 || strcmp(entry->d_name,"..")==0) continue;
+
+        snprintf(path, sizeof(path), "%s/%s", dir, entry->d_name);
+
+        if(!mostrar(path, entry->d_name)) continue;
+
+        if(!esDirectorio(path)) print_info(path);
+        else if(rec == RECA) print_info(path);
+    }
+
+    if(rec == RECA){
+        for(int i=0;i<sub_count;i++)
+            list_dir(subdirs[i]);
+    }
+
+    for(int i=0;i<sub_count;i++) free(subdirs[i]);
 
     closedir(d);
 }
 
-
 void list_nodir (char *nodir){
-    print_info(nodir);
+    print_info(nodir); 
 }
 
 void Cmd_dir (char *tr[]){
-    if(tr[0]==NULL) printf("Faltan parametros\n"); //Estaría bien hacer que liste el actual
+    if(tr[0]==NULL)
+        list_dir(".");
     else if(!strcmp(tr[0], "-d")){
         for (int i=1; tr[i]!=NULL;i++){
             if(esDirectorio(tr[i])) list_dir(tr[i]);
@@ -429,7 +425,7 @@ void Cmd_erase (char *tr[]){
         return;
     } 
     for(i=0;tr[i]!=NULL;i++){
-        if(remove(tr[i])==-1) perror("El directorio no está vacío");
+        if(remove(tr[i])==-1) perror("error");
         
     }
 }
@@ -445,7 +441,6 @@ void erase_recursive(const char *path) {
         return;
     }
 
-    // Si es un archivo o link, lo borramos directamente
     if (!S_ISDIR(s.st_mode) || S_ISLNK(s.st_mode)) {
         if (remove(path) == -1) {
             perror(path);
@@ -453,7 +448,6 @@ void erase_recursive(const char *path) {
         return;
     }
 
-    // Si es un directorio, abrimos y borramos su contenido recursivamente
     DIR *d = opendir(path);
     if (!d) {
         perror(path);
@@ -465,12 +459,13 @@ void erase_recursive(const char *path) {
             continue;
 
         snprintf(fullpath, sizeof(fullpath), "%s/%s", path, entry->d_name);
+
+        
         erase_recursive(fullpath);
     }
 
     closedir(d);
 
-    // Finalmente borramos el directorio vacío
     if (rmdir(path) == -1) {
         perror(path);
     }
@@ -491,16 +486,17 @@ void Cmd_delrec (char *tr[]){
 void Cmd_lseek(char *tr[]){
     int mode;
     if(tr[0]==NULL || tr[1]==NULL || tr[2]==NULL){
-        printf("Faltan paramentros\n");
+        printf("Faltan parametros\n");
         return;
     }
 
     if (!strcmp(tr[2],"SEEK_SET")) mode=SEEK_SET;
     else if (!strcmp(tr[2],"SEEK_CUR")) mode=SEEK_CUR;
     else if (!strcmp(tr[2],"SEEK_END")) mode=SEEK_END; 
+    else printf("Modo invalido\n");
 
 
-    if(lseek(atoi(tr[0]),atoi(tr[1]),mode)==-1) perror("Fallo");
+    if(lseek(atoi(tr[0]),atoi(tr[1]),mode)==-1) perror("error");
 
 }
 
@@ -512,10 +508,17 @@ void Cmd_writestr(char *tr[]){
 
     int df = atoi(tr[0]);
 
-    if (write(df, tr[1], strlen(tr[1])) == -1)
-        perror("Error al escribir");
+    char buffer[MAX] = "";
+    for (int i = 1; tr[i] != NULL; i++) {
+        strcat(buffer, tr[i]);
+        if (tr[i + 1] != NULL)
+            strcat(buffer, " ");
+    }
+
+    if (write(df, buffer, strlen(buffer)) == -1)
+        perror("error");
     else
-        printf("Escrito en fd=%d: \"%s\"\n", df, tr[1]);
+        printf("Escrito en fd=%d: \"%s\"\n", df, buffer);
 
 }
 

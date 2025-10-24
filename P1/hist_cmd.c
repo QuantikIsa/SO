@@ -8,7 +8,7 @@ void createEmptyList(tList *L) {
 }
 
 bool isEmptyList(tList L) {
-    return (L.start = LNULL);
+    return (L.start == LNULL);
 }
 
 tPosL first(tList L){ 
@@ -64,26 +64,24 @@ void deleteList(tList *L){
 
 
 void HList_show_all() {
-    if (isEmptyList(historic)) printf("Historial vacío.\n");
     int i = 1;
-    for (tPosL p = historic.start; p != LNULL; p = p->next) {
+
+    if (isEmptyList(historic)) printf("Historial vacío.\n");
+    for (tPosL p = historic.start; p != LNULL; p = p->next) 
         printf("%d. %s", i++, p->comando);
-    }
 }
 
 char* HList_show_n(int n) {
-    if (n <= 0 || n > historic.total) {
-        printf("No existe el comando número %d\n", n);
-        return NULL;   // <- Muy importante
-    }
     int i = 1;
+    
+    if (n <= 0 || n > historic.total) return NULL; 
     tPosL p = historic.start;
     while (p != NULL && i < n) {
         p = p->next;
         i++;
     }
     printf("%d. %s", i, p->comando);
-    return p->comando;   // Devuelves el puntero al comando
+    return p->comando; 
 }
 
 

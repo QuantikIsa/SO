@@ -1,4 +1,6 @@
 #ifndef HIST_CMD_H
+#define HIST_CMD_H
+
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
@@ -23,7 +25,7 @@ typedef struct {
 } tList;
 
 
-
+/*
 void createEmptyList(tList *L);
 bool isEmptyList(tList L);
 tPosL first(tList L);
@@ -31,7 +33,7 @@ tPosL last(tList L);
 tPosL next(tPosL posicion);
 bool insertItem(tItemL comando, tList *L);
 void deleteList(tList *L);
-
+*/
 
 
 void HList_show_all();

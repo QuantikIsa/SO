@@ -15,7 +15,7 @@ struct CMD_help {
 
 
 void Cmd_help (char *tr[]);
-
+// P0
 void Help_authors();
 void Help_getpid();
 void Help_chdir();
@@ -32,6 +32,14 @@ void Help_help();
 void Help_quit();
 void Help_exit();
 void Help_bye();
-
+// P1
+void Help_create();
+void Help_setdirparams();
+void Help_getdirparams();
+void Help_dir();
+void Help_erase();
+void Help_delrec();
+void Help_lseek();
+void Help_writestr();
 
 #endif

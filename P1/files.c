@@ -3,7 +3,7 @@
 FILES files[MAXF]; 
 int n_openfiles = 0;
 
-struct MODES M[]={
+MODES M[]={
     {"cr","O_CREAT "},
     {"ap","O_APPEND "},
     {"ex","O_EXCL "},
@@ -47,21 +47,14 @@ char *Files_m(int desc){
     return files[desc].mode;
 }
 
-void Files_add_duplicate(int desc, char *f, char *m){
-    files[desc].df = desc;
-    strcpy(files[desc].file, f);
-    strcpy(files[desc].mode, m);
-    n_openfiles++;
-}
-
 void Files_show(){
     int i;
+
     for(i=0; i<MAXF; i++){
         if(strcmp(files[i].file,"")==0)
             printf("descriptor: %d, offset: (  )-> no usado\n", i);
         else
-            printf("descriptor: %d, offset: ( )-> %s %s\n", files[i].df, files[i].file, files[i].mode);
-            
+            printf("descriptor: %d, offset: (  )-> %s %s\n", files[i].df, files[i].file, files[i].mode);            
     }
 }
 
