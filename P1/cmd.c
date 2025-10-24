@@ -6,13 +6,10 @@ int oculto = NOHID;
 int rec = NOREC;
 
 void Cmd_authors (char *tr[]){
-    if (strcmp(tr[0], "-?")==0){
-        Help_authors();
-        return;
-    }
-
     if(tr[0]==NULL) 
         printf("Nuria García García: n.ggarcia@udc.es\nIsabel Villar García: i.villar@udc.es\n");
+    else if (!strcmp(tr[0], "-?"))
+        Help_authors();
     else if (strcmp(tr[0],"-l")==0) 
         printf("n.ggarcia@udc.es\ni.villar@udc.es\n");
     else if (strcmp(tr[0],"-n")==0) 
@@ -23,15 +20,12 @@ void Cmd_authors (char *tr[]){
 
 void Cmd_getpid (char *tr[]){
     int pid;
-    if (strcmp(tr[0], "-?")==0){
-        Help_getpid();
-        return;
-    }
-
     if(tr[0]==NULL){
         pid = getpid();
         printf("Pid del shell: %d\n", pid);
     } 
+    else if (strcmp(tr[0], "-?")==0)
+        Help_getpid();
     else if (strcmp(tr[0],"-p")==0){
         pid = getppid();
         printf("Pid del padre del shell: %d\n", pid);
@@ -43,29 +37,22 @@ void Cmd_getpid (char *tr[]){
 void Cmd_getcwd (char *tr[]){
     char dir[MAX];
 
-    if (strcmp(tr[0], "-?")==0){
-        Help_getcwd();
-        return;
-    }
-
     if (getcwd(dir, MAX) == NULL) {
         perror("error");
         return;
     }
-    if (tr[0] == NULL) {
+    if (tr[0] == NULL)
         printf("%s\n", dir);
-    } 
+    else if (!strcmp(tr[0], "-?"))
+        Help_getcwd();
     else
         perror("error");
 }
 
 void Cmd_chdir (char *tr[]){
-    if (strcmp(tr[0], "-?")==0){
-        Help_chdir();
-        return;
-    }
-
     if(tr[0]==NULL) Cmd_getcwd(tr);
+    else if (!strcmp(tr[0], "-?"))
+        Help_chdir();
     else{
         if(chdir(tr[0])==0) printf("%s\n", tr[0]);
         else perror("error");
@@ -78,11 +65,6 @@ void Cmd_date (char *tr[]){
     char hour[MAX];
     char date[MAX];
 
-    if (strcmp(tr[0], "-?")==0){
-        Help_date();
-        return;
-    }
-
     time(&t);
     tm_info = localtime(&t);
 
@@ -92,6 +74,8 @@ void Cmd_date (char *tr[]){
     strftime(date, sizeof(date), "%d/%m/%Y", tm_info);
     if(tr[0]==NULL)
         printf("%s\n%s\n", hour, date);
+    else if (!strcmp(tr[0], "-?"))
+        Help_date();
     else if(!strcmp(tr[0],"-d"))
         printf("%s\n", date);
     else if(!strcmp(tr[0],"-t"))
@@ -105,32 +89,27 @@ void Cmd_hour (char *tr[]){
     struct tm *tm_info;
     char hour[MAX];
 
-    if (strcmp(tr[0], "-?")==0){
-        Help_hour();
-        return;
-    }
-
     time(&t);
     tm_info = localtime(&t);
 
     if(tm_info == NULL) perror("error");
 
     strftime(hour, sizeof(hour), "%H:%M:%S", tm_info);
+
     if(tr[0]==NULL) printf("%s\n", hour);
+    else if (!strcmp(tr[0], "-?"))
+        Help_hour();
     else perror("error");
 }
 
 void Cmd_historic (char *tr[]){
     int ncommand;
     char *command;
-
-    if (strcmp(tr[0], "-?")==0){
-        Help_historic();
-        return;
-    }
-
+    
     if(tr[0]==NULL)
         HList_show_all();
+    else if (!strcmp(tr[0], "-?"))
+        Help_historic();
     else if (!strcmp(tr[0],"-count")){
         ncommand = HList_total();
         printf("Numero de elementos en el historico: %d\n", ncommand);
@@ -157,14 +136,12 @@ void Cmd_open (char *tr[]){
     int i, df, mode =  O_RDONLY;
     char *aux;
     char mode_c[MAX];
-
-    if (strcmp(tr[0], "-?")==0){
-        Help_open();
+    if(tr[0]==NULL){
+        Files_show();
         return;
     }
-
-    else if(tr[0]==NULL){
-        Files_show();
+    if (!strcmp(tr[0], "-?")){
+        Help_open();
         return;
     }
     strcpy(mode_c,"");
@@ -195,12 +172,13 @@ void Cmd_open (char *tr[]){
 
 void Cmd_close (char *tr[]){
     int df;
-    if (strcmp(tr[0], "-?")==0){
-        Help_close();
-        return;
-    }
+    
     if (tr[0]==NULL || (df=atoi(tr[0]))<0) { 
         Files_show();
+        return;
+    }
+    if (!strcmp(tr[0], "-?")){
+        Help_close();
         return;
     }
     
@@ -215,13 +193,12 @@ void Cmd_dup (char *tr[]){
     char aux[MAX],*p;
     char mode_c[MAX];
     
-    if (strcmp(tr[0], "-?")==0){
-        Help_dup();
-        return;
-    }
-
     if (tr[0]==NULL || (df=atoi(tr[0]))<0) { 
         Files_show();       
+        return;
+    }
+    if (!strcmp(tr[0], "-?")){
+        Help_dup();
         return;
     }
     
@@ -241,63 +218,50 @@ void Cmd_dup (char *tr[]){
 }
 
 void Cmd_listopen (char *tr[]){
-
-    if (strcmp(tr[0], "-?")==0){
-        Help_listopen();
-        return;
-    }
-
-
     if(tr[0]==NULL)
         Files_show();
+    else if (!strcmp(tr[0], "-?"))
+        Help_listopen();
     else 
         printf("Argumentos inválidos");
 }
 
 void Cmd_infosys (char *tr[]){
     struct utsname info;
-
-    if (strcmp(tr[0], "-?")==0){
-        Help_infosys();
-        return;
-    }
-
     if(tr[0]==NULL){
         if (uname(&info)==0)
             printf("%s (%s), OS: %s-%s-%s\n", info.nodename, info.machine, info.sysname, info.release, info.version);
         else
             perror("error");
     }
+    else if (!strcmp(tr[0], "-?"))
+        Help_infosys();
     else printf("Argumentos inválidos\n");
 }
 
 void Cmd_quit (char *tr[]){
-
-    if (strcmp(tr[0], "-?")==0) Help_quit();
+    if (tr[0]!=NULL && !strcmp(tr[0], "-?"))
+        Help_quit();
     else exit(0);
 }
 
 void Cmd_exit (char *tr[]){
-
-    if (strcmp(tr[0], "-?")==0) Help_exit();
+    if (tr[0]!=NULL && !strcmp(tr[0], "-?"))
+        Help_exit();
     else exit(0);
 }
 
 void Cmd_bye (char *tr[]){
-
-    if (strcmp(tr[0], "-?")==0) Help_bye();
+    if (tr[0]!=NULL && !strcmp(tr[0], "-?"))
+        Help_bye();
     else exit(0);
 }
 
 void Cmd_create (char *tr[]){
-
-    if (strcmp(tr[0], "-?")==0){
-        Help_create();
-        return;
-    }
-
-
     if(tr[0]==NULL) printf("Faltan argumentos\n");
+    
+    else if (!strcmp(tr[0], "-?"))
+        Help_create();
     
     else if (!strcmp(tr[0],"-f")){
         if(tr[1]==NULL) printf("Falta el nombre del archivo\n");
@@ -317,14 +281,8 @@ void Cmd_create (char *tr[]){
 }
 
 void Cmd_setdirparams (char *tr[]){
-
-    if (strcmp(tr[0], "-?")==0){
-        Help_setdirparams();
-        return;
-    }
-
-
     if(tr[0]==NULL) printf("Faltan parámetros\n");
+    else if (!strcmp(tr[0], "-?")) Help_setdirparams();
     else if(!strcmp(tr[0], "long")) longitud = LONG;
     else if(!strcmp(tr[0], "short")) longitud = SHORT;
     else if(!strcmp(tr[0], "link")) linkeado = LINK;
@@ -338,14 +296,12 @@ void Cmd_setdirparams (char *tr[]){
 
 }
 
-void Cmd_getdirparams (char * tr[]){
+void Cmd_getdirparams (char *tr[]){
     char *recstr;
-
-    if (strcmp(tr[0], "-?")==0){
+    if (tr[0]!=0 && !strcmp(tr[0], "-?")){
         Help_getdirparams();
         return;
     }
-
     if (rec==RECA) recstr = "recursivo (despues)";
     else if (rec==RECB) recstr = "recursivo (antes)";
     else recstr = "no recursivo";
@@ -436,8 +392,6 @@ void print_info(char *path){
 }
 
 
-
-
 void list_dir(const char *dir){
     DIR *d = opendir(dir);
     if(!d){
@@ -491,15 +445,10 @@ void list_nodir (char *nodir){
 }
 
 void Cmd_dir (char *tr[]){
-
-    if (strcmp(tr[0], "-?")==0){
-        Help_dir();
-        return;
-    }
-
-
     if(tr[0]==NULL)
         list_dir(".");
+    else if (!strcmp(tr[0], "-?"))
+        Help_dir();
     else if(!strcmp(tr[0], "-d")){
         for (int i=1; tr[i]!=NULL;i++){
             if(esDirectorio(tr[i])) list_dir(tr[i]);
@@ -513,20 +462,15 @@ void Cmd_dir (char *tr[]){
 void Cmd_erase (char *tr[]){
     int i;
 
-    if (strcmp(tr[0], "-?")==0){
-        Help_erase();
-        return;
-    }
-
-
-    if(tr[0]==NULL){
+    if(tr[0]==NULL)
         printf("Faltan argumentos\n");
-        return;
-    } 
-    for(i=0;tr[i]!=NULL;i++){
-        if(remove(tr[i])==-1) perror("error");
-        
-    }
+    else if (!strcmp(tr[0], "-?"))
+        Help_erase();
+    else 
+        for(i=0;tr[i]!=NULL;i++){
+            if(remove(tr[i])==-1) perror("error");
+            
+        }
 }
 
 
@@ -574,35 +518,26 @@ void erase_recursive(const char *path) {
 }
 
 void Cmd_delrec (char *tr[]){
-
-    if (strcmp(tr[0], "-?")==0){
-        Help_delrec();
-        return;
-    }
-
-    if (tr[0] == NULL) {
+    if (tr[0] == NULL)
         printf("Faltan argumentos\n");
-        return;
-    }
-
-    for (int i = 0; tr[i] != NULL; i++) {
-        erase_recursive(tr[i]);
-    }
-
+    else if (!strcmp(tr[0], "-?"))
+        Help_delrec();
+    else
+        for (int i = 0; tr[i] != NULL; i++) 
+            erase_recursive(tr[i]);
 }
 
 void Cmd_lseek(char *tr[]){
     int mode;
-
-    if (strcmp(tr[0], "-?")==0){
+    if (tr[0]!=NULL && !strcmp(tr[0], "-?")){
         Help_lseek();
         return;
     }
-
     if(tr[0]==NULL || tr[1]==NULL || tr[2]==NULL){
         printf("Faltan parametros\n");
         return;
     }
+    
 
     if (!strcmp(tr[2],"SEEK_SET")) mode=SEEK_SET;
     else if (!strcmp(tr[2],"SEEK_CUR")) mode=SEEK_CUR;
@@ -615,8 +550,7 @@ void Cmd_lseek(char *tr[]){
 }
 
 void Cmd_writestr(char *tr[]){
-
-    if (strcmp(tr[0], "-?")==0){
+    if (tr[0]!=NULL && !strcmp(tr[0], "-?")){
         Help_writestr();
         return;
     }
@@ -627,6 +561,11 @@ void Cmd_writestr(char *tr[]){
     }
 
     int df = atoi(tr[0]);
+
+    if(df==0 && strcmp(tr[0],"0")){
+        printf("Df invalido\n");
+        return;
+    }
 
     char buffer[MAX] = "";
     for (int i = 1; tr[i] != NULL; i++) {
